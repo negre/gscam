@@ -269,7 +269,9 @@ namespace gscam {
       // actual capture framerate of the device.
       // ROS_DEBUG("Getting data...");
 #if (GST_VERSION_MAJOR == 1)
+      
       GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink_));
+      //GstSample* sample = gst_app_sink_pull_preroll(GST_APP_SINK(sink_));
       if(!sample) {
         ROS_ERROR("Could not get gstreamer sample.");
         break;

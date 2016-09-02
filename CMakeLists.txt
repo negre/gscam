@@ -7,7 +7,7 @@ find_package(PkgConfig)
 
 if(GSTREAMER_VERSION_1_x)
   message(STATUS "gst 1.0")
-  pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
+  pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-rtsp-1.0)
   pkg_check_modules(GST_APP REQUIRED gstreamer-app-1.0)
 else()
   message(STATUS "gst 0.1")
@@ -81,7 +81,7 @@ else()
     ${catkin_LIBRARIES}
     ${GSTREAMER_LIBRARIES}
     ${GST_APP_LIBRARIES})
-
+	
   # Install directives
 
   install(TARGETS gscam gscam_node GSCamNodelet
