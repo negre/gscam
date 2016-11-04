@@ -79,7 +79,10 @@ namespace gscam {
     // Get the camera parameters file
     nh_private_.getParam("camera_info_url", camera_info_url_);
     nh_private_.getParam("camera_name", camera_name_);
-
+    
+    nh_private_.param("width", width_, 0);
+    nh_private_.param("height", height_, 0);
+    
     // Get the image encoding
     nh_private_.param("image_encoding", image_encoding_, sensor_msgs::image_encodings::RGB8);
     if (image_encoding_ != sensor_msgs::image_encodings::RGB8 &&
@@ -132,15 +135,38 @@ namespace gscam {
 #if (GST_VERSION_MAJOR == 1)
     // http://gstreamer.freedesktop.org/data/doc/gstreamer/head/pwg/html/section-types-definitions.html
     if (image_encoding_ == sensor_msgs::image_encodings::RGB8) {
+      if(width_!=0 && height_!=0)
         caps = gst_caps_new_simple( "video/x-raw", 
             "format", G_TYPE_STRING, "RGB",
-            NULL); 
+            "width",  G_TYPE_INT, width_,
+            "height",  G_TYPE_INT, height_,
+            NULL);
+      else
+        caps = gst_caps_new_simple( "video/x-raw", 
+            "format", G_TYPE_STRING, "RGB",
+             NULL);
+      
     } else if (image_encoding_ == sensor_msgs::image_encodings::MONO8) {
+      if(width_!=0 && height_!=0)
         caps = gst_caps_new_simple( "video/x-raw", 
             "format", G_TYPE_STRING, "GRAY8",
-            NULL); 
+            "width",  G_TYPE_INT, width_,
+            "height",  G_TYPE_INT, height_,                                    
+            NULL);
+      else
+        caps = gst_caps_new_simple( "video/x-raw", 
+            "format", G_TYPE_STRING, "GRAY8",
+            NULL);
+      
     } else if (image_encoding_ == "jpeg") {
-        caps = gst_caps_new_simple("image/jpeg", NULL, NULL);
+      if(width_!=0 && height_!=0)
+        caps = gst_caps_new_simple("image/jpeg",
+                                   "width",  G_TYPE_INT, width_,
+                                   "height",  G_TYPE_INT, height_,
+                                   NULL, NULL);
+      else
+        caps = gst_caps_new_simple("image/jpeg",
+                                   NULL, NULL);        
     }
 #else
     if (image_encoding_ == sensor_msgs::image_encodings::RGB8) {
@@ -321,7 +347,7 @@ namespace gscam {
       GstStructure *structure = gst_caps_get_structure(caps,0);
       gst_structure_get_int(structure,"width",&width_);
       gst_structure_get_int(structure,"height",&height_);
-
+      
       // Update header information
       sensor_msgs::CameraInfo cur_cinfo = camera_info_manager_.getCameraInfo();
       sensor_msgs::CameraInfoPtr cinfo;
